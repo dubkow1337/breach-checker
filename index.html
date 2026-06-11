@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Breach Checker | REDRABBIT</title>
+    <title>Проверка утечек | REDRABBIT</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -12,7 +12,10 @@
             font-family: 'Courier New', monospace;
             padding: 20px;
         }
-        .container { max-width: 1000px; margin: 0 auto; }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
         h1 {
             color: #00ff9d;
             border-bottom: 2px solid #00ff9d;
@@ -30,6 +33,7 @@
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
+            margin-bottom: 20px;
         }
         input {
             flex: 1;
@@ -56,39 +60,22 @@
             background: #00ff9d;
             color: #0a0c10;
         }
-        .result {
-            margin-top: 20px;
+        .info {
+            background: rgba(0, 255, 157, 0.03);
+            border-left: 3px solid #00ff9d;
             padding: 15px;
-            border-radius: 8px;
-            display: none;
+            margin: 20px 0;
+            font-size: 0.9rem;
         }
-        .safe {
-            border: 1px solid #00ff9d;
-            background: rgba(0, 255, 157, 0.1);
-            color: #00ff9d;
-        }
-        .breached {
-            border: 1px solid #ff5555;
-            background: rgba(255, 85, 85, 0.1);
-            color: #ff5555;
-        }
-        .warning {
-            border: 1px solid #ffaa00;
-            background: rgba(255, 170, 0, 0.1);
-            color: #ffaa00;
-        }
-        .loading {
-            text-align: center;
-            padding: 20px;
-            font-size: 1.2rem;
-        }
-        .tips {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(255, 255, 0, 0.1);
-            border: 1px solid #ffff00;
-            border-radius: 8px;
-            color: #ffff00;
+        .badge {
+            display: inline-block;
+            background: #00ff9d;
+            color: #0a0c10;
+            font-size: 0.7rem;
+            padding: 2px 10px;
+            border-radius: 20px;
+            margin-left: 10px;
+            vertical-align: middle;
         }
         footer {
             text-align: center;
@@ -96,36 +83,49 @@
             color: #4a4e5c;
             font-size: 0.8rem;
         }
-        .manual-link {
+        .features {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
             margin-top: 15px;
-            padding: 10px;
-            background: rgba(0, 255, 157, 0.05);
-            border-radius: 8px;
-            text-align: center;
         }
-        .manual-link a {
-            color: #00ff9d;
+        .feature {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background: rgba(0, 255, 157, 0.03);
+            border-radius: 8px;
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>🔍 Email Breach Checker</h1>
+    <h1>🔍 Проверка утечек данных <span class="badge">РФ</span></h1>
     
     <div class="card">
+        <p style="margin-bottom: 15px;">Введите email, номер телефона или логин для проверки:</p>
         <div class="input-group">
-            <input type="email" id="emailInput" placeholder="Введите email, например, user@example.com">
-            <button onclick="checkEmail()">🔍 Проверить</button>
+            <input type="text" id="userData" placeholder="email@example.com, +7XXX или логин">
+            <button onclick="openNckci()">🔍 Проверить</button>
         </div>
-        <div id="result" class="result"></div>
-        <div id="loading" class="loading" style="display: none;">⏳ Проверка... Подождите несколько секунд</div>
+        
+        <div class="info">
+            ⚡ Вы перейдёте на официальный сайт <strong>Национального координационного центра по компьютерным инцидентам (НКЦКИ)</strong><br>
+            Сервис работает без VPN, бесплатно и официально.
+        </div>
+        
+        <div class="features">
+            <div class="feature">📧 Email</div>
+            <div class="feature">📱 Телефон</div>
+            <div class="feature">🔑 Логин</div>
+        </div>
     </div>
     
     <div class="card">
-        <h3>💡 Что делать, если email в утечке?</h3>
+        <h3>💡 Что делать, если данные в утечке?</h3>
         <ul style="margin-top: 10px; margin-left: 20px;">
-            <li>✅ НЕМЕДЛЕННО смените пароль на этом сайте</li>
-            <li>✅ Если пароль использовался где-то ещё — смените везде</li>
+            <li>✅ НЕМЕДЛЕННО смените пароль на этом сервисе</li>
+            <li>✅ Если пароль использовался везде — смените везде</li>
             <li>✅ Включите двухфакторную аутентификацию (2FA)</li>
             <li>✅ Используйте менеджер паролей (Bitwarden, KeePass)</li>
             <li>✅ Никогда не используйте один пароль везде</li>
@@ -133,117 +133,26 @@
     </div>
     
     <footer>
-        Данные предоставлены Have I Been Pwned (Troy Hunt) | REDRABBIT Security Toolkit
+        Данные предоставлены НКЦКИ (Национальный координационный центр по компьютерным инцидентам) | REDRABBIT Security Toolkit
     </footer>
 </div>
 
 <script>
-    async function checkEmail() {
-        const email = document.getElementById('emailInput').value.trim();
-        if (!email || !email.includes('@')) {
-            alert('Введите корректный email');
+    function openNckci() {
+        const userData = document.getElementById('userData').value.trim();
+        
+        if (!userData) {
+            alert('Введите email, номер телефона или логин');
             return;
         }
         
-        const resultDiv = document.getElementById('result');
-        const loadingDiv = document.getElementById('loading');
+        // Формируем URL для открытия
+        // Сервис НКЦКИ: https://chk.safe-surf.ru/
+        // Добавляем параметр с данными пользователя, чтобы он сразу подставился
+        const url = `https://chk.safe-surf.ru/?q=${encodeURIComponent(userData)}`;
         
-        resultDiv.style.display = 'none';
-        loadingDiv.style.display = 'block';
-        
-        // Пробуем через CORS-прокси
-        const proxyUrls = [
-            `https://cors-anywhere.herokuapp.com/https://haveibeenpwned.com/api/v3/breachedaccount/${encodeURIComponent(email)}`,
-            `https://api.allorigins.win/raw?url=https://haveibeenpwned.com/api/v3/breachedaccount/${encodeURIComponent(email)}`
-        ];
-        
-        let response = null;
-        let lastError = null;
-        
-        for (const url of proxyUrls) {
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 15000);
-                
-                const res = await fetch(url, {
-                    signal: controller.signal,
-                    headers: { 'Accept': 'application/json' }
-                });
-                clearTimeout(timeoutId);
-                
-                if (res.status === 200 || res.status === 404) {
-                    response = res;
-                    break;
-                }
-            } catch (e) {
-                lastError = e;
-                continue;
-            }
-        }
-        
-        loadingDiv.style.display = 'none';
-        
-        if (!response) {
-            // Если API недоступен — показываем инструкцию
-            resultDiv.className = 'result warning';
-            resultDiv.innerHTML = `
-                <strong>⚠️ API временно недоступно</strong><br><br>
-                Сервис Have I Been Pwned может быть заблокирован в вашем регионе или перегружен.<br><br>
-                🔐 <strong>Альтернативный способ проверки:</strong><br>
-                1. Откройте сайт <a href="https://haveibeenpwned.com" target="_blank" style="color:#00ff9d;">haveibeenpwned.com</a> (может потребоваться VPN)<br>
-                2. Введите ваш email в поле на главной странице<br>
-                3. Получите результат о утечках<br><br>
-                <div class="manual-link">
-                    📧 <strong>Ручная проверка для ${email}:</strong><br>
-                    <a href="https://haveibeenpwned.com/account/${encodeURIComponent(email)}" target="_blank">https://haveibeenpwned.com/account/${email}</a>
-                </div>
-            `;
-            resultDiv.style.display = 'block';
-            return;
-        }
-        
-        if (response.status === 404) {
-            resultDiv.className = 'result safe';
-            resultDiv.innerHTML = `
-                <strong>✅ Хорошие новости!</strong><br>
-                Ваш email <strong>${email}</strong> не найден в известных утечках данных.<br><br>
-                Но это не значит, что можно расслабляться. Используйте сложные пароли и 2FA.
-            `;
-            resultDiv.style.display = 'block';
-        } 
-        else if (response.status === 200) {
-            const breaches = await response.json();
-            const breachList = breaches.map(b => `
-                <li>
-                    <strong>${b.Title || b.Name}</strong><br>
-                    ${b.Description ? b.Description.substring(0, 200) + '...' : 'Подробнее по ссылке'}
-                    <br><small>Дата: ${b.BreachDate} | ${b.PwnCount.toLocaleString()} аккаунтов</small>
-                </li>
-            `).join('');
-            
-            resultDiv.className = 'result breached';
-            resultDiv.innerHTML = `
-                <strong>⚠️ ВНИМАНИЕ!</strong><br>
-                Ваш email <strong>${email}</strong> был обнаружен в ${breaches.length} утечке(ах):
-                <ul style="margin-top: 10px; margin-left: 20px;">${breachList}</ul>
-                <div class="tips">
-                    🔐 <strong>РЕКОМЕНДАЦИИ:</strong><br>
-                    • Немедленно смените пароль на всех сайтах, где использовали этот email<br>
-                    • Включите двухфакторную аутентификацию везде, где возможно<br>
-                    • Используйте менеджер паролей для генерации уникальных паролей
-                </div>
-            `;
-            resultDiv.style.display = 'block';
-        }
-        else {
-            resultDiv.className = 'result warning';
-            resultDiv.innerHTML = `
-                <strong>⚠️ Ошибка API</strong><br>
-                Статус: ${response.status}. Попробуйте позже или используйте ручную проверку:<br>
-                <a href="https://haveibeenpwned.com/account/${encodeURIComponent(email)}" target="_blank">https://haveibeenpwned.com/account/${email}</a>
-            `;
-            resultDiv.style.display = 'block';
-        }
+        // Открываем в новой вкладке
+        window.open(url, '_blank');
     }
 </script>
 </body>
