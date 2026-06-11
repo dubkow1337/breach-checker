@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Проверка утечек | REDRABBIT</title>
+    <title>Email Breach Checker | REDRABBIT</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -12,10 +12,7 @@
             font-family: 'Courier New', monospace;
             padding: 20px;
         }
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
+        .container { max-width: 800px; margin: 0 auto; }
         h1 {
             color: #00ff9d;
             border-bottom: 2px solid #00ff9d;
@@ -33,7 +30,6 @@
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
-            margin-bottom: 20px;
         }
         input {
             flex: 1;
@@ -64,10 +60,14 @@
             background: rgba(0, 255, 157, 0.03);
             border-left: 3px solid #00ff9d;
             padding: 15px;
-            margin: 20px 0;
-            font-size: 0.9rem;
+            margin-top: 20px;
         }
-        .badge {
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #4a4e5c;
+        }
+        .ru-badge {
             display: inline-block;
             background: #00ff9d;
             color: #0a0c10;
@@ -75,84 +75,66 @@
             padding: 2px 10px;
             border-radius: 20px;
             margin-left: 10px;
-            vertical-align: middle;
-        }
-        footer {
-            text-align: center;
-            margin-top: 30px;
-            color: #4a4e5c;
-            font-size: 0.8rem;
-        }
-        .features {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-top: 15px;
-        }
-        .feature {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-            background: rgba(0, 255, 157, 0.03);
-            border-radius: 8px;
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>🔍 Проверка утечек данных <span class="badge">РФ</span></h1>
+    <h1>🔍 Проверка утечек данных <span class="ru-badge">РФ</span></h1>
     
     <div class="card">
-        <p style="margin-bottom: 15px;">Введите email, номер телефона или логин для проверки:</p>
+        <p style="margin-bottom: 15px;">Введите email для проверки:</p>
         <div class="input-group">
-            <input type="text" id="userData" placeholder="email@example.com, +7XXX или логин">
-            <button onclick="openNckci()">🔍 Проверить</button>
+            <input type="email" id="emailInput" placeholder="user@example.com">
+            <button onclick="openHIBP()">🔍 Проверить на HIBP</button>
         </div>
         
         <div class="info">
-            ⚡ Вы перейдёте на официальный сайт <strong>Национального координационного центра по компьютерным инцидентам (НКЦКИ)</strong><br>
-            Сервис работает без VPN, бесплатно и официально.
-        </div>
-        
-        <div class="features">
-            <div class="feature">📧 Email</div>
-            <div class="feature">📱 Телефон</div>
-            <div class="feature">🔑 Логин</div>
+            🌐 <strong>Как это работает:</strong><br>
+            Вы перейдёте на сайт <strong>Have I Been Pwned</strong> (международная база утечек).<br>
+            Если сайт недоступен, используйте VPN или проверьте через <strong>chk.safe-surf.ru</strong> (российский аналог).
         </div>
     </div>
     
     <div class="card">
-        <h3>💡 Что делать, если данные в утечке?</h3>
-        <ul style="margin-top: 10px; margin-left: 20px;">
-            <li>✅ НЕМЕДЛЕННО смените пароль на этом сервисе</li>
-            <li>✅ Если пароль использовался везде — смените везде</li>
-            <li>✅ Включите двухфакторную аутентификацию (2FA)</li>
-            <li>✅ Используйте менеджер паролей (Bitwarden, KeePass)</li>
-            <li>✅ Никогда не используйте один пароль везде</li>
+        <h3>🇷🇺 Российский сервис (НКЦКИ)</h3>
+        <p>Официальный сервис Национального координационного центра по компьютерным инцидентам.</p>
+        <p>✅ Проверяет email, телефон, логин<br>
+        ✅ Работает без VPN</p>
+        <button onclick="openNCSC()">🔍 Проверить через НКЦКИ</button>
+    </div>
+    
+    <div class="card">
+        <h3>💡 Что делать при утечке?</h3>
+        <ul style="margin-left: 20px;">
+            <li>✅ Немедленно смените пароль</li>
+            <li>✅ Включите двухфакторную аутентификацию</li>
+            <li>✅ Используйте менеджер паролей</li>
         </ul>
     </div>
     
     <footer>
-        Данные предоставлены НКЦКИ (Национальный координационный центр по компьютерным инцидентам) | REDRABBIT Security Toolkit
+        REDRABBIT Security Toolkit | Have I Been Pwned + НКЦКИ
     </footer>
 </div>
 
 <script>
-    function openNckci() {
-        const userData = document.getElementById('userData').value.trim();
-        
-        if (!userData) {
-            alert('Введите email, номер телефона или логин');
+    function openHIBP() {
+        const email = document.getElementById('emailInput').value.trim();
+        if (!email || !email.includes('@')) {
+            alert('Введите корректный email');
             return;
         }
-        
-        // Формируем URL для открытия
-        // Сервис НКЦКИ: https://chk.safe-surf.ru/
-        // Добавляем параметр с данными пользователя, чтобы он сразу подставился
-        const url = `https://chk.safe-surf.ru/?q=${encodeURIComponent(userData)}`;
-        
-        // Открываем в новой вкладке
-        window.open(url, '_blank');
+        window.open(`https://haveibeenpwned.com/account/${encodeURIComponent(email)}`, '_blank');
+    }
+    
+    function openNCSC() {
+        const email = document.getElementById('emailInput').value.trim();
+        if (!email || !email.includes('@')) {
+            alert('Введите корректный email');
+            return;
+        }
+        window.open(`https://chk.safe-surf.ru/?q=${encodeURIComponent(email)}`, '_blank');
     }
 </script>
 </body>
