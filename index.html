@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Breach Checker | REDRABBIT</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a0c10;
+            color: #00ff9d;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #00ff9d;
+            border-bottom: 2px solid #00ff9d;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .card {
+            background: rgba(0, 255, 157, 0.05);
+            border: 1px solid #00ff9d;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        input {
+            flex: 1;
+            background: #1a1d24;
+            border: 1px solid #00ff9d;
+            color: #00ff9d;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 1rem;
+            border-radius: 8px;
+        }
+        button {
+            background: rgba(0, 255, 157, 0.1);
+            border: 1px solid #00ff9d;
+            color: #00ff9d;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: monospace;
+            font-size: 1rem;
+            transition: 0.2s;
+        }
+        button:hover {
+            background: #00ff9d;
+            color: #0a0c10;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .safe {
+            border: 1px solid #00ff9d;
+            background: rgba(0, 255, 157, 0.1);
+            color: #00ff9d;
+        }
+        .breached {
+            border: 1px solid #ff5555;
+            background: rgba(255, 85, 85, 0.1);
+            color: #ff5555;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.2rem;
+        }
+        .breach-list {
+            margin-top: 15px;
+            list-style: none;
+        }
+        .breach-list li {
+            padding: 8px;
+            margin: 5px 0;
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 3px solid #ff5555;
+            font-size: 0.9rem;
+        }
+        .tips {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 0, 0.1);
+            border: 1px solid #ffff00;
+            border-radius: 8px;
+            color: #ffff00;
+        }
+        .stats {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .stat-card {
+            background: rgba(0, 255, 157, 0.05);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            flex: 1;
+        }
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #4a4e5c;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🔍 Email Breach Checker</h1>
+    
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-number">15+ млрд</div>
+            <div>учётных записей в утечках</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">500+</div>
+            <div>публичных утечек</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">Бесплатно</div>
+            <div>через Have I Been Pwned</div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="input-group">
+            <input type="email" id="emailInput" placeholder="Введите email, например, user@example.com">
+            <button onclick="checkEmail()">🔍 Проверить</button>
+        </div>
+        <div id="result" class="result"></div>
+        <div id="loading" class="loading" style="display: none;">⏳ Проверка... Подождите несколько секунд</div>
+    </div>
+    
+    <div class="card">
+        <h3>💡 Что делать, если email в утечке?</h3>
+        <ul style="margin-top: 10px; margin-left: 20px;">
+            <li>✅ НЕМЕДЛЕННО смените пароль на этом сайте</li>
+            <li>✅ Если пароль использовался где-то ещё — смените везде</li>
+            <li>✅ Включите двухфакторную аутентификацию (2FA)</li>
+            <li>✅ Используйте менеджер паролей (Bitwarden, KeePass)</li>
+            <li>✅ Никогда не используйте один пароль везде</li>
+        </ul>
+    </div>
+    
+    <footer>
+        Данные предоставлены Have I Been Pwned (Troy Hunt) | REDRABBIT Security Toolkit
+    </footer>
+</div>
+
+<script>
+    async function checkEmail() {
+        const email = document.getElementById('emailInput').value.trim();
+        if (!email || !email.includes('@')) {
+            alert('Введите корректный email');
+            return;
+        }
+        
+        const resultDiv = document.getElementById('result');
+        const loadingDiv = document.getElementById('loading');
+        
+        resultDiv.style.display = 'none';
+        loadingDiv.style.display = 'block';
+        
+        try {
+            // HIBP API (бесплатно, без ключа, но с ограничением по частоте)
+            const url = `https://haveibeenpwned.com/api/v3/breachedaccount/${encodeURIComponent(email)}`;
+            
+            const response = await fetch(url, {
+                headers: {
+                    'hibp-api-key': '' // публичный API не требует ключа, но может попросить
+                }
+            });
+            
+            loadingDiv.style.display = 'none';
+            
+            if (response.status === 404) {
+                // Email не найден в утечках
+                resultDiv.className = 'result safe';
+                resultDiv.innerHTML = `
+                    <strong>✅ Хорошие новости!</strong><br>
+                    Ваш email <strong>${email}</strong> не найден в известных утечках данных.<br><br>
+                    Но это не значит, что можно расслабляться. Используйте сложные пароли и 2FA.
+                `;
+                resultDiv.style.display = 'block';
+            } 
+            else if (response.status === 200) {
+                // Email найден в утечках
+                const breaches = await response.json();
+                const breachNames = breaches.map(b => b.Name);
+                const breachList = breaches.map(b => `
+                    <li>
+                        <strong>${b.Title || b.Name}</strong><br>
+                        ${b.Description ? b.Description.substring(0, 150) + '...' : 'Подробнее по ссылке'}
+                        <br><small>Дата: ${b.BreachDate} | ${b.PwnCount.toLocaleString()} аккаунтов</small>
+                    </li>
+                `).join('');
+                
+                resultDiv.className = 'result breached';
+                resultDiv.innerHTML = `
+                    <strong>⚠️ ВНИМАНИЕ!</strong><br>
+                    Ваш email <strong>${email}</strong> был обнаружен в ${breaches.length} утечке(ах):
+                    <ul class="breach-list">${breachList}</ul>
+                    <div class="tips">
+                        🔐 <strong>РЕКОМЕНДАЦИИ:</strong><br>
+                        • Немедленно смените пароль на всех сайтах, где использовали этот email<br>
+                        • Включите двухфакторную аутентификацию везде, где возможно<br>
+                        • Используйте менеджер паролей для генерации уникальных паролей<br>
+                        • Проверьте другие свои email-адреса
+                    </div>
+                `;
+                resultDiv.style.display = 'block';
+            }
+            else if (response.status === 429) {
+                resultDiv.className = 'result breached';
+                resultDiv.innerHTML = `
+                    <strong>⏱️ Слишком много запросов</strong><br>
+                    API Have I Been Pwned имеет ограничение. Подождите минуту и попробуйте снова.
+                `;
+                resultDiv.style.display = 'block';
+            }
+            else {
+                throw new Error(`HTTP ${response.status}`);
+            }
+        } catch (error) {
+            loadingDiv.style.display = 'none';
+            resultDiv.className = 'result breached';
+            resultDiv.innerHTML = `
+                <strong>❌ Ошибка проверки</strong><br>
+                Не удалось подключиться к API. Попробуйте позже.
+                <br><small>${error.message}</small>
+            `;
+            resultDiv.style.display = 'block';
+        }
+    }
+</script>
+</body>
+</html>
